@@ -1,4 +1,5 @@
 import streamlit as st
+import re
 from langchain_helper import generate_restaurant_name_and_items
 
 # ── Page Config ─────────────────────────────────────────────
@@ -95,7 +96,7 @@ cuisine = st.sidebar.selectbox(
     ["Indian","Italian","Mexican","Japanese","French","Greek","Chinese"]
 )
 
-# ✅ Updated Button Label
+# ✅ Updated Button
 generate = st.sidebar.button("Generate Restaurant")
 
 # ── Generation ──────────────────────────────────────────────
@@ -116,8 +117,14 @@ if generate:
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Concept Narrative ───────────────────────────────────
+    # ── Concept Narrative (FIXED) ───────────────────────────
     section_header("Concept Narrative")
+
+    raw_concept = result.get("concept", "")
+    clean_concept = re.sub(r'<.*?>', '', raw_concept).strip()
+
+    if not clean_concept:
+        clean_concept = "A refined culinary experience crafted with artistic precision."
 
     st.markdown(f"""
     <div style="background:#0e1220;padding:18px;border-radius:6px;">
@@ -126,7 +133,7 @@ if generate:
             {result.get("tagline","")}
         </p>
         <p style="color:#b8c4e0;font-size:14px;">
-            {result.get("concept","")}
+            {clean_concept}
         </p>
     </div>
     """, unsafe_allow_html=True)
